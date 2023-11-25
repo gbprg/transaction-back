@@ -27,7 +27,6 @@ router.post("/transactions", async (req, res) => {
 
   const transaction = {
     idempotencyId: uuid(),
-
     amount: amount,
     type: type,
   };
