@@ -1,11 +1,8 @@
-const express = require("express");
 const { dynamoDB, sqs } = require("../data/db");
 
 const { v4: uuid } = require("uuid");
 
-const router = express.Router();
-
-router.post("/transactions", async (req, res) => {
+async function createTransaction(req, res) {
   const { amount, type } = req.body;
   if (!type || !amount) {
     return res
@@ -31,10 +28,8 @@ router.post("/transactions", async (req, res) => {
   };
 
   try {
-    // Enviar para SQS
     await sqs.sendMessage(sqsParams).promise();
 
-    // Inserir no DynamoDB
     await dynamoDB.put(dynamoDBParams).promise();
 
     res
@@ -44,9 +39,9 @@ router.post("/transactions", async (req, res) => {
     console.error("Erro ao criar transação:", error);
     res.status(500).json({ error: "Erro ao criar transação." });
   }
-});
+}
 
-router.get("/transactions", async (req, res) => {
+async function listTransactions(req, res) {
   const params = {
     TableName: "transactions",
   };
@@ -57,6 +52,6 @@ router.get("/transactions", async (req, res) => {
     console.log(error);
     res.status(500).json({ error: "Erro ao buscar transações." });
   }
-});
+}
 
-module.exports = router;
+module.exports = { createTransaction, listTransactions };
