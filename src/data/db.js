@@ -7,4 +7,5 @@ AWS.config.update({
 });
 
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
-module.exports = dynamoDB;
+const sqs = new AWS.SQS();
+module.exports = { dynamoDB, sqs };
